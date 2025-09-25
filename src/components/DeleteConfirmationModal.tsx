@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from './ui/button';
 import { useLanguage } from '../contexts/LanguageContext';
 import { deleteCertificate } from '../services/mockApi';
-import { Loader2, AlertTriangle } from 'lucide-react';
+import { Loader as Loader2, TriangleAlert as AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 
 interface DeleteConfirmationModalProps {

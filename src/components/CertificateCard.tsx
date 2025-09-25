@@ -5,7 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
-import { ExternalLink, FileText, Shield, AlertTriangle, X, Clock, Edit, Trash2, Calendar } from 'lucide-react';
+import { ExternalLink, FileText, Shield, TriangleAlert as AlertTriangle, X, Clock, CreditCard as Edit, Trash2, Calendar } from 'lucide-react';
 
 interface CertificateCardProps {
   certificate: Certificate;

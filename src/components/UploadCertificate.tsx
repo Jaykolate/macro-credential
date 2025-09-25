@@ -5,7 +5,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Upload, Link, Loader2 } from 'lucide-react';
+import { Upload, Link, Loader as Loader2 } from 'lucide-react';
 import { uploadCertificate } from '../services/mockApi';
 import { Certificate } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';

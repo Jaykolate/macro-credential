@@ -9,7 +9,7 @@ import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { searchLearners, getCertificates, requestManualVerification } from '../services/mockApi';
-import { Search, Users, FileCheck, Eye, AlertTriangle, Calendar } from 'lucide-react';
+import { Search, Users, FileCheck, Eye, TriangleAlert as AlertTriangle, Calendar } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 
 interface EmployerDashboardProps {

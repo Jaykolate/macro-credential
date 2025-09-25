@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Input } from './ui/input';
 import { Badge } from './ui/badge';
 import { getCertificates } from '../services/mockApi';
-import { Search, Filter, BookOpen, AlertTriangle, Calendar } from 'lucide-react';
+import { Search, ListFilter as Filter, BookOpen, TriangleAlert as AlertTriangle, Calendar } from 'lucide-react';
 
 interface LearnerDashboardProps {
   learnerId: string;

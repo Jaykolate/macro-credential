@@ -5,20 +5,7 @@ import { Badge } from './ui/badge';
 import { AuthModal } from './AuthModal';
 import { LanguageToggle } from './LanguageToggle';
 import { useLanguage } from '../contexts/LanguageContext';
-import { 
-  Shield, 
-  GraduationCap, 
-  Building2, 
-  Brain, 
-  Zap, 
-  Eye, 
-  CheckCircle, 
-  ArrowRight,
-  Star,
-  Users,
-  FileCheck,
-  Lock
-} from 'lucide-react';
+import { Shield, GraduationCap, Building2, Brain, Zap, Eye, CircleCheck as CheckCircle, ArrowRight, Star, Users, FileCheck, Lock } from 'lucide-react';
 
 interface LandingPageProps {
   onAuthSuccess?: (user: { id: string; name: string; email: string; role: 'learner' | 'employer' }) => void;

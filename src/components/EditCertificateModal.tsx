@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Certificate } from '../types';
 import { updateCertificate } from '../services/mockApi';
 import { useLanguage } from '../contexts/LanguageContext';
-import { Loader2 } from 'lucide-react';
+import { Loader as Loader2 } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 
 interface EditCertificateModalProps {
