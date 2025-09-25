@@ -3,6 +3,8 @@ import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { AuthModal } from './AuthModal';
+import { LanguageToggle } from './LanguageToggle';
+import { useLanguage } from '../contexts/LanguageContext';
 import { 
   Shield, 
   GraduationCap, 
@@ -23,6 +25,7 @@ interface LandingPageProps {
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onAuthSuccess }) => {
+  const { t } = useLanguage();
   const [authModal, setAuthModal] = useState<{
     isOpen: boolean;
     type: 'login' | 'signup';
@@ -52,14 +55,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthSuccess }) => {
                 <Shield className="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold">CredentialVault</h1>
-                <p className="text-xs text-muted-foreground">Micro-Credential Aggregator</p>
+                <h1 className="text-xl font-semibold">{t('nav.credentialVault')}</h1>
+                <p className="text-xs text-muted-foreground">{t('nav.microCredentialAggregator')}</p>
               </div>
             </div>
             
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <LanguageToggle />
               <Button variant="outline" onClick={() => openAuth('login', 'learner')}>
-                Sign In
+                {t('nav.signIn')}
               </Button>
             </div>
           </div>
@@ -71,15 +75,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthSuccess }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
           <div className="text-center">
             <Badge className="mb-6" variant="outline">
-              🔬 AI-Powered Verification Engine
+              🔬 {t('features.aiPowered')}
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-              Verify & Aggregate
+              {t('landing.verifyAggregate')}
               <br />
-              Micro-Credentials
+              {t('landing.microCredentials')}
             </h1>
             <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
-              Secure, AI-powered platform for learners to manage certificates and employers to verify credentials instantly. Built with blockchain technology and NSQF compliance.
+              {t('landing.secureAiPowered')}
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
@@ -89,7 +93,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthSuccess }) => {
                 onClick={() => openAuth('signup', 'learner')}
               >
                 <GraduationCap className="w-5 h-5" />
-                Get Started as Learner
+                {t('landing.getStartedLearner')}
                 <ArrowRight className="w-4 h-4" />
               </Button>
               <Button 
@@ -99,7 +103,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthSuccess }) => {
                 onClick={() => openAuth('signup', 'employer')}
               >
                 <Building2 className="w-5 h-5" />
-                Join as Employer
+                {t('landing.joinAsEmployer')}
               </Button>
             </div>
 
@@ -107,15 +111,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthSuccess }) => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
               <div className="text-center">
                 <div className="text-3xl font-bold text-primary mb-2">95%</div>
-                <div className="text-muted-foreground">Verification Accuracy</div>
+                <div className="text-muted-foreground">{t('features.verificationAccuracy')}</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-primary mb-2">2.5s</div>
-                <div className="text-muted-foreground">Average Verification Time</div>
+                <div className="text-muted-foreground">{t('features.averageTime')}</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-primary mb-2">500+</div>
-                <div className="text-muted-foreground">Supported Institutions</div>
+                <div className="text-muted-foreground">{t('features.supportedInstitutions')}</div>
               </div>
             </div>
           </div>
@@ -127,10 +131,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthSuccess }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Complete Verification Solution
+              {t('landing.completeVerification')}
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Our AI-powered engine provides comprehensive certificate verification through multiple validation layers
+              {t('landing.aiPoweredEngine')}
             </p>
           </div>
 
@@ -139,9 +143,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthSuccess }) => {
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <Eye className="w-6 h-6 text-green-600" />
               </div>
-              <h3 className="font-semibold mb-2">QR Code Verification</h3>
+              <h3 className="font-semibold mb-2">{t('features.qrVerification')}</h3>
               <p className="text-sm text-muted-foreground">
-                Instant authenticity check through embedded QR codes
+                {t('features.instantCheck')}
               </p>
             </Card>
 
@@ -149,9 +153,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthSuccess }) => {
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <Lock className="w-6 h-6 text-blue-600" />
               </div>
-              <h3 className="font-semibold mb-2">Blockchain Security</h3>
+              <h3 className="font-semibold mb-2">{t('features.blockchainSecurity')}</h3>
               <p className="text-sm text-muted-foreground">
-                Immutable certificate records stored on blockchain
+                {t('features.immutableRecords')}
               </p>
             </Card>
 
@@ -159,9 +163,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthSuccess }) => {
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <Zap className="w-6 h-6 text-purple-600" />
               </div>
-              <h3 className="font-semibold mb-2">API Verification</h3>
+              <h3 className="font-semibold mb-2">{t('features.apiVerification')}</h3>
               <p className="text-sm text-muted-foreground">
-                Direct validation with issuing institutions
+                {t('features.directValidation')}
               </p>
             </Card>
 
@@ -169,9 +173,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthSuccess }) => {
               <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <Brain className="w-6 h-6 text-yellow-600" />
               </div>
-              <h3 className="font-semibold mb-2">AI Credibility Scoring</h3>
+              <h3 className="font-semibold mb-2">{t('features.aiScoring')}</h3>
               <p className="text-sm text-muted-foreground">
-                Machine learning assessment of certificate authenticity
+                {t('features.mlAssessment')}
               </p>
             </Card>
           </div>
@@ -183,10 +187,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthSuccess }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Built for Everyone
+              {t('landing.builtForEveryone')}
             </h2>
             <p className="text-xl text-muted-foreground">
-              Whether you're advancing your career or hiring top talent
+              {t('landing.advancingCareer')}
             </p>
           </div>
 
@@ -198,8 +202,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthSuccess }) => {
                   <GraduationCap className="w-8 h-8 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-semibold">For Learners</h3>
-                  <p className="text-muted-foreground">Manage and showcase your credentials</p>
+                  <h3 className="text-2xl font-semibold">{t('landing.forLearners')}</h3>
+                  <p className="text-muted-foreground">{t('landing.manageShowcase')}</p>
                 </div>
               </div>
 
@@ -227,13 +231,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthSuccess }) => {
                   className="flex-1" 
                   onClick={() => openAuth('signup', 'learner')}
                 >
-                  Sign Up Free
+                  {t('auth.signUp')} Free
                 </Button>
                 <Button 
                   variant="outline" 
                   onClick={() => openAuth('login', 'learner')}
                 >
-                  Sign In
+                  {t('nav.signIn')}
                 </Button>
               </div>
             </Card>
@@ -245,8 +249,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthSuccess }) => {
                   <Building2 className="w-8 h-8 text-secondary-foreground" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-semibold">For Employers</h3>
-                  <p className="text-muted-foreground">Verify candidate credentials instantly</p>
+                  <h3 className="text-2xl font-semibold">{t('landing.forEmployers')}</h3>
+                  <p className="text-muted-foreground">{t('landing.verifyInstantly')}</p>
                 </div>
               </div>
 
@@ -274,13 +278,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthSuccess }) => {
                   className="flex-1" 
                   onClick={() => openAuth('signup', 'employer')}
                 >
-                  Get Started
+                  {t('landing.getStartedLearner')}
                 </Button>
                 <Button 
                   variant="outline" 
                   onClick={() => openAuth('login', 'employer')}
                 >
-                  Sign In
+                  {t('nav.signIn')}
                 </Button>
               </div>
             </Card>
@@ -292,10 +296,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthSuccess }) => {
       <section className="py-20 lg:py-28 bg-primary text-primary-foreground">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Ready to Transform Credential Verification?
+            {t('landing.readyTransform')}
           </h2>
           <p className="text-xl opacity-90 mb-10">
-            Join thousands of learners and employers already using CredentialVault
+            {t('landing.joinThousands')}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -306,7 +310,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthSuccess }) => {
               onClick={() => openAuth('signup', 'learner')}
             >
               <GraduationCap className="w-5 h-5" />
-              Start as Learner
+              {t('landing.startAsLearner')}
             </Button>
             <Button 
               size="lg" 
@@ -315,7 +319,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthSuccess }) => {
               onClick={() => openAuth('signup', 'employer')}
             >
               <Building2 className="w-5 h-5" />
-              Join as Employer
+              {t('landing.joinAsEmployer')}
             </Button>
           </div>
         </div>
@@ -331,23 +335,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthSuccess }) => {
                   <Shield className="w-5 h-5 text-primary-foreground" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">CredentialVault</h3>
-                  <p className="text-sm text-muted-foreground">Micro-Credential Aggregator</p>
+                  <h3 className="font-semibold">{t('nav.credentialVault')}</h3>
+                  <p className="text-sm text-muted-foreground">{t('nav.microCredentialAggregator')}</p>
                 </div>
               </div>
               <p className="text-muted-foreground mb-4">
-                Secure, AI-powered platform for micro-credential verification and management. 
-                Built with blockchain technology and NSQF compliance.
+                {t('landing.secureAiPowered')}
               </p>
-              <Badge variant="outline">🚀 Hackathon Prototype 2024</Badge>
+              <Badge variant="outline">🚀 {t('landing.hackathonPrototype')}</Badge>
             </div>
             
             <div>
               <h4 className="font-semibold mb-4">Platform</h4>
               <div className="space-y-2 text-sm text-muted-foreground">
-                <p>AI Verification</p>
-                <p>Blockchain Security</p>
-                <p>NSQF Compliance</p>
+                <p>{t('features.aiPowered')}</p>
+                <p>{t('features.blockchainSecurity')}</p>
+                <p>{t('landing.nsqfCompliant')}</p>
                 <p>API Integration</p>
               </div>
             </div>
@@ -365,14 +368,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onAuthSuccess }) => {
           
           <div className="border-t mt-8 pt-8 flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              © 2024 CredentialVault. Built for Hackathon.
+              © 2024 {t('nav.credentialVault')}. Built for Hackathon.
             </p>
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
-              <span>MERN Stack</span>
+              <span>{t('landing.mernStack')}</span>
               <span>•</span>
-              <span>AI-Powered</span>
+              <span>{t('features.aiPowered')}</span>
               <span>•</span>
-              <span>NSQF Compliant</span>
+              <span>{t('landing.nsqfCompliant')}</span>
             </div>
           </div>
         </div>

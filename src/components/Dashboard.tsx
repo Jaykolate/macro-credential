@@ -1,6 +1,8 @@
 import React from 'react';
 import { LearnerDashboard } from './LearnerDashboard';
 import { EmployerDashboard } from './EmployerDashboard';
+import { LanguageToggle } from './LanguageToggle';
+import { useLanguage } from '../contexts/LanguageContext';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Avatar } from './ui/avatar';
@@ -20,6 +22,7 @@ interface DashboardProps {
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
+  const { t } = useLanguage();
 
   return (
     <div className="min-h-screen bg-background">
@@ -32,12 +35,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                 <Shield className="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold">CredentialVault</h1>
-                <p className="text-xs text-muted-foreground">Micro-Credential Aggregator</p>
+                <h1 className="text-xl font-semibold">{t('nav.credentialVault')}</h1>
+                <p className="text-xs text-muted-foreground">{t('nav.microCredentialAggregator')}</p>
               </div>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <LanguageToggle />
               <Avatar className="w-8 h-8">
                 <div className="w-full h-full bg-primary/10 flex items-center justify-center">
                   {user.role === 'learner' ? (
@@ -70,12 +74,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
               </div>
               <div>
                 <h1 className="text-2xl font-semibold">
-                  {user.role === 'learner' ? 'Learner Dashboard' : 'Employer Dashboard'}
+                  {user.role === 'learner' ? t('dashboard.learner') : t('dashboard.employer')}
                 </h1>
                 <p className="text-sm text-muted-foreground">
                   {user.role === 'learner' 
-                    ? 'Manage and verify your certificates' 
-                    : 'Search and verify candidate credentials'
+                    ? t('dashboard.manageCertificates')
+                    : t('dashboard.searchVerify')
                   }
                 </p>
               </div>
@@ -85,11 +89,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
             <div className="hidden md:flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Zap className="w-4 h-4 text-yellow-500" />
-                <span>AI-Powered Verification</span>
+                <span>{t('features.aiPowered')}</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Shield className="w-4 h-4 text-green-500" />
-                <span>Blockchain Secured</span>
+                <span>{t('features.blockchainSecurity')}</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Eye className="w-4 h-4 text-blue-500" />
@@ -112,14 +116,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
               </Avatar>
               <div className="flex-1">
                 <h2 className="font-semibold">
-                  Welcome back, {user.name}
+                  {t('dashboard.welcomeBack')}, {user.name}
                 </h2>
                 <p className="text-sm text-muted-foreground">
                   {user.email}
                 </p>
               </div>
               <Badge variant={user.role === 'learner' ? 'default' : 'secondary'}>
-                {user.role === 'learner' ? 'Learner Account' : 'Employer Account'}
+                {user.role === 'learner' ? t('dashboard.learnerAccount') : t('dashboard.employerAccount')}
               </Badge>
             </div>
           </Card>
@@ -138,35 +142,35 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         <Card className="mt-12 p-6 bg-muted/30">
           <h3 className="font-semibold mb-4 flex items-center gap-2">
             <Brain className="w-5 h-5 text-primary" />
-            Verification Engine Features
+            {t('features.aiPowered')}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
             <div className="flex items-start gap-3">
               <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
               <div>
-                <p className="font-medium">QR Code Verification</p>
-                <p className="text-muted-foreground">Instant certificate authenticity check</p>
+                <p className="font-medium">{t('features.qrVerification')}</p>
+                <p className="text-muted-foreground">{t('features.instantCheck')}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
               <div>
                 <p className="font-medium">Blockchain Hash</p>
-                <p className="text-muted-foreground">Immutable certificate records</p>
+                <p className="text-muted-foreground">{t('features.immutableRecords')}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <div className="w-2 h-2 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
               <div>
-                <p className="font-medium">API Verification</p>
-                <p className="text-muted-foreground">Direct issuer validation</p>
+                <p className="font-medium">{t('features.apiVerification')}</p>
+                <p className="text-muted-foreground">{t('features.directValidation')}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></div>
               <div>
-                <p className="font-medium">AI Credibility Scoring</p>
-                <p className="text-muted-foreground">Machine learning assessment</p>
+                <p className="font-medium">{t('features.aiScoring')}</p>
+                <p className="text-muted-foreground">{t('features.mlAssessment')}</p>
               </div>
             </div>
           </div>
@@ -178,14 +182,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              CredentialVault - Built for Hackathon 2024
+              {t('nav.credentialVault')} - {t('landing.hackathonPrototype')}
             </p>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <span>MERN Stack Prototype</span>
+              <span>{t('landing.mernStack')} Prototype</span>
               <span>•</span>
-              <span>AI-Powered Verification</span>
+              <span>{t('features.aiPowered')}</span>
               <span>•</span>
-              <span>NSQF Compliant</span>
+              <span>{t('landing.nsqfCompliant')}</span>
             </div>
           </div>
         </div>

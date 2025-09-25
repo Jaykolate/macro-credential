@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Certificate, User } from '../types';
 import { CertificateCard } from './CertificateCard';
+import { useLanguage } from '../contexts/LanguageContext';
+import { getExpiryStatus } from '../services/mockApi';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { searchLearners, getCertificates, requestManualVerification } from '../services/mockApi';
-import { Search, Users, FileCheck, Eye } from 'lucide-react';
+import { Search, Users, FileCheck, Eye, AlertTriangle, Calendar } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 
 interface EmployerDashboardProps {
@@ -15,6 +17,7 @@ interface EmployerDashboardProps {
 }
 
 export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ employerId }) => {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [learners, setLearners] = useState<User[]>([]);
   const [selectedLearner, setSelectedLearner] = useState<User | null>(null);
@@ -45,7 +48,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ employerId
       setLearners(results);
     } catch (error) {
       console.error('Search failed:', error);
-      toast.error('Failed to search learners');
+      toast.error(t('common.error'));
     } finally {
       setIsSearching(false);
     }
@@ -58,7 +61,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ employerId
       setCertificates(data);
     } catch (error) {
       console.error('Failed to load certificates:', error);
-      toast.error('Failed to load certificates');
+      toast.error(t('common.error'));
     } finally {
       setIsLoadingCertificates(false);
     }
@@ -67,10 +70,10 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ employerId
   const handleRequestVerification = async (certificateId: string) => {
     try {
       await requestManualVerification(certificateId, employerId);
-      toast.success('Manual verification requested successfully');
+      toast.success(t('common.success'));
     } catch (error) {
       console.error('Failed to request verification:', error);
-      toast.error('Failed to request verification');
+      toast.error(t('common.error'));
     }
   };
 
@@ -96,6 +99,14 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ employerId
       verified: certificates.filter(c => c.verificationStatus === 'verified').length,
       aiScored: certificates.filter(c => c.verificationStatus === 'ai-scored').length,
       needsReview: certificates.filter(c => c.verificationStatus === 'needs-review').length,
+      expiring: certificates.filter(c => {
+        const status = getExpiryStatus(c);
+        return status?.status === 'expiring';
+      }).length,
+      expired: certificates.filter(c => {
+        const status = getExpiryStatus(c);
+        return status?.status === 'expired';
+      }).length,
     };
   };
 
@@ -107,21 +118,21 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ employerId
       <div>
         <h1 className="flex items-center gap-2">
           <Users className="w-6 h-6" />
-          Employer Dashboard
+          {t('dashboard.employer')}
         </h1>
-        <p className="text-muted-foreground">Search and verify learner credentials</p>
+        <p className="text-muted-foreground">{t('dashboard.searchVerify')}</p>
       </div>
 
       {/* Search Section */}
       <Card className="p-6">
         <h2 className="flex items-center gap-2 mb-4">
           <Search className="w-5 h-5" />
-          Search Learners
+          {t('employer.searchLearners')}
         </h2>
         <div className="flex gap-4">
           <div className="flex-1">
             <Input
-              placeholder="Search by name or email..."
+              placeholder={t('search.learners')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full"
@@ -133,13 +144,13 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ employerId
         {isSearching && (
           <div className="mt-4 text-center">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-2 text-sm text-muted-foreground">Searching...</p>
+            <p className="mt-2 text-sm text-muted-foreground">{t('common.loading')}</p>
           </div>
         )}
 
         {learners.length > 0 && (
           <div className="mt-4 space-y-2">
-            <h3>Search Results:</h3>
+            <h3>{t('employer.searchResults')}:</h3>
             {learners.map((learner) => (
               <div
                 key={learner.id}
@@ -160,7 +171,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ employerId
                     size="sm"
                   >
                     <Eye className="w-4 h-4 mr-2" />
-                    View Certificates
+                    {t('employer.viewCertificates')}
                   </Button>
                 </div>
               </div>
@@ -170,7 +181,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ employerId
 
         {searchQuery.length >= 2 && learners.length === 0 && !isSearching && (
           <div className="mt-4 text-center text-muted-foreground">
-            No learners found matching "{searchQuery}"
+            {t('employer.noLearners')} "{searchQuery}"
           </div>
         )}
       </Card>
@@ -182,7 +193,7 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ employerId
             <div>
               <h2 className="flex items-center gap-2">
                 <FileCheck className="w-5 h-5" />
-                {selectedLearner.name}'s Certificates
+                {selectedLearner.name} {t('employer.certificatesFor')}
               </h2>
               <p className="text-muted-foreground">{selectedLearner.email}</p>
             </div>
@@ -191,55 +202,82 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ employerId
           {isLoadingCertificates ? (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-              <p>Loading certificates...</p>
+              <p>{t('common.loading')}</p>
             </div>
           ) : (
             <>
               {/* Stats */}
               {stats && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
                   <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                    <p className="text-blue-800">Total</p>
+                    <p className="text-blue-800">{t('status.total')}</p>
                     <p className="text-2xl font-semibold text-blue-900">{stats.total}</p>
                   </div>
                   <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                    <p className="text-green-800">Verified</p>
+                    <p className="text-green-800">{t('status.verified')}</p>
                     <p className="text-2xl font-semibold text-green-900">{stats.verified}</p>
                   </div>
                   <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                    <p className="text-yellow-800">AI-Scored</p>
+                    <p className="text-yellow-800">{t('status.aiScored')}</p>
                     <p className="text-2xl font-semibold text-yellow-900">{stats.aiScored}</p>
                   </div>
                   <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-                    <p className="text-red-800">Needs Review</p>
+                    <p className="text-red-800">{t('status.needsReview')}</p>
                     <p className="text-2xl font-semibold text-red-900">{stats.needsReview}</p>
+                  </div>
+                  <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                    <p className="text-orange-800">{t('certificates.expiringIn')} 30d</p>
+                    <p className="text-2xl font-semibold text-orange-900">{stats.expiring}</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <p className="text-gray-800">{t('certificates.expired')}</p>
+                    <p className="text-2xl font-semibold text-gray-900">{stats.expired}</p>
                   </div>
                 </div>
               )}
 
+              {/* Expiry Alerts */}
+              {stats && (stats.expiring > 0 || stats.expired > 0) && (
+                <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg mb-6">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="w-5 h-5 text-orange-600 mt-0.5" />
+                    <div>
+                      <h3 className="font-medium text-orange-800 mb-1">{t('certificates.expiringWarning')}</h3>
+                      <div className="text-sm text-orange-700 space-y-1">
+                        {stats.expiring > 0 && (
+                          <p>{stats.expiring} certificate(s) expiring within 30 days</p>
+                        )}
+                        {stats.expired > 0 && (
+                          <p>{stats.expired} certificate(s) have expired</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
               {/* Filters */}
               {certificates.length > 0 && (
                 <div className="flex gap-4 mb-6 p-4 bg-muted/50 rounded-lg">
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
                     <SelectTrigger className="w-40">
-                      <SelectValue placeholder="Status" />
+                      <SelectValue placeholder={t('filter.status')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All Status</SelectItem>
-                      <SelectItem value="verified">Verified</SelectItem>
-                      <SelectItem value="ai-scored">AI-Scored</SelectItem>
-                      <SelectItem value="needs-review">Needs Review</SelectItem>
+                      <SelectItem value="all">{t('status.all')} {t('filter.status')}</SelectItem>
+                      <SelectItem value="verified">{t('status.verified')}</SelectItem>
+                      <SelectItem value="ai-scored">{t('status.aiScored')}</SelectItem>
+                      <SelectItem value="needs-review">{t('status.needsReview')}</SelectItem>
                     </SelectContent>
                   </Select>
                   <Select value={nsqfFilter} onValueChange={setNsqfFilter}>
                     <SelectTrigger className="w-32">
-                      <SelectValue placeholder="NSQF" />
+                      <SelectValue placeholder={t('filter.nsqfLevel')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All Levels</SelectItem>
+                      <SelectItem value="all">{t('filter.allLevels')}</SelectItem>
                       {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((level) => (
                         <SelectItem key={level} value={level.toString()}>
-                          Level {level}
+                          {t('filter.level')} {level}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -251,11 +289,11 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ employerId
               {filteredCertificates.length === 0 ? (
                 <div className="text-center py-8">
                   <FileCheck className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <h3>No certificates found</h3>
+                  <h3>{t('message.noCertificates')}</h3>
                   <p className="text-muted-foreground">
                     {certificates.length === 0 
                       ? "This learner hasn't uploaded any certificates yet"
-                      : "No certificates match the current filters"
+                      : t('message.adjustFilters')
                     }
                   </p>
                 </div>
@@ -279,9 +317,9 @@ export const EmployerDashboard: React.FC<EmployerDashboardProps> = ({ employerId
       {!selectedLearner && searchQuery.length < 2 && (
         <Card className="p-12 text-center">
           <Search className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-          <h3>Search for Learners</h3>
+          <h3>{t('employer.searchLearners')}</h3>
           <p className="text-muted-foreground">
-            Enter at least 2 characters to search for learners by name or email
+            {t('employer.enterSearch')}
           </p>
         </Card>
       )}

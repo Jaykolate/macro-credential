@@ -16,6 +16,7 @@ export interface Certificate {
   title: string;
   issuer: string;
   dateIssued: string;
+  expiryDate?: string;
   fileUrl?: string;
   linkUrl?: string;
   verificationStatus: 'verified' | 'ai-scored' | 'needs-review' | 'pending';

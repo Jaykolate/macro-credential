@@ -1,5 +1,32 @@
 import { Certificate, User, VerificationRequest } from '../types';
 
+// Helper function to calculate days until expiry
+const getDaysUntilExpiry = (expiryDate: string): number => {
+  const today = new Date();
+  const expiry = new Date(expiryDate);
+  const diffTime = expiry.getTime() - today.getTime();
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+};
+
+// Helper function to generate random expiry dates
+const generateExpiryDate = (issuedDate: string): string => {
+  const issued = new Date(issuedDate);
+  const yearsToAdd = Math.random() > 0.3 ? 2 : 1; // 70% chance of 2 years, 30% chance of 1 year
+  const expiry = new Date(issued);
+  expiry.setFullYear(expiry.getFullYear() + yearsToAdd);
+  
+  // Some certificates might be expiring soon for demo purposes
+  if (Math.random() > 0.7) {
+    const today = new Date();
+    const daysFromNow = Math.floor(Math.random() * 60) + 1; // 1-60 days from now
+    const nearExpiry = new Date(today);
+    nearExpiry.setDate(today.getDate() + daysFromNow);
+    return nearExpiry.toISOString().split('T')[0];
+  }
+  
+  return expiry.toISOString().split('T')[0];
+};
+
 // Mock data
 export const mockUsers: User[] = [
   { id: '1', name: 'John Doe', email: 'john@example.com', role: 'learner' },
@@ -17,6 +44,7 @@ export const mockCertificates: Certificate[] = [
     title: 'Full Stack Development Certification',
     issuer: 'TechEd Institute',
     dateIssued: '2024-08-15',
+    expiryDate: '2026-08-15',
     fileUrl: '/certificates/cert1.pdf',
     verificationStatus: 'verified',
     aiScore: 95,
@@ -40,6 +68,7 @@ export const mockCertificates: Certificate[] = [
     title: 'React.js Professional Certificate',
     issuer: 'Meta',
     dateIssued: '2024-07-20',
+    expiryDate: '2025-01-15', // Expiring soon for demo
     linkUrl: 'https://coursera.org/verify/cert123',
     verificationStatus: 'ai-scored',
     aiScore: 87,
@@ -61,6 +90,7 @@ export const mockCertificates: Certificate[] = [
     title: 'Data Science Fundamentals',
     issuer: 'DataCamp',
     dateIssued: '2024-06-10',
+    expiryDate: '2024-12-20', // Expiring very soon for demo
     fileUrl: '/certificates/cert3.pdf',
     verificationStatus: 'needs-review',
     nsqfLevel: 4,
@@ -76,15 +106,40 @@ export const mockCertificates: Certificate[] = [
       },
     },
   },
+  {
+    id: '4',
+    learnerId: '1',
+    title: 'AWS Cloud Practitioner',
+    issuer: 'Amazon Web Services',
+    dateIssued: '2023-12-01',
+    expiryDate: '2024-12-01', // Expired for demo
+    fileUrl: '/certificates/cert4.pdf',
+    verificationStatus: 'verified',
+    aiScore: 92,
+    nsqfLevel: 5,
+    hasQRCode: true,
+    blockchainHash: '0xabcdef1234567890',
+    metadata: {
+      fileType: 'PDF',
+      uploadDate: '2024-01-15',
+      verificationSteps: {
+        qrCheck: true,
+        blockchainVerification: true,
+        apiVerification: true,
+        aiScoring: true,
+      },
+    },
+  },
 ];
 
 // Simulated API functions
-export const uploadCertificate = async (certificate: Omit<Certificate, 'id' | 'verificationStatus' | 'metadata'>): Promise<Certificate> => {
+export const uploadCertificate = async (certificate: Omit<Certificate, 'id' | 'verificationStatus' | 'metadata' | 'expiryDate'>): Promise<Certificate> => {
   await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate upload delay
   
   const newCertificate: Certificate = {
     ...certificate,
     id: Date.now().toString(),
+    expiryDate: generateExpiryDate(certificate.dateIssued),
     verificationStatus: 'pending',
     metadata: {
       fileType: certificate.fileUrl ? 'PDF' : undefined,
@@ -101,6 +156,31 @@ export const uploadCertificate = async (certificate: Omit<Certificate, 'id' | 'v
   // Simulate verification process
   const verified = await verifyCertificate(newCertificate.id);
   return { ...newCertificate, ...verified };
+};
+
+export const updateCertificate = async (certificateId: string, updates: Partial<Certificate>): Promise<Certificate> => {
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  
+  const certificateIndex = mockCertificates.findIndex(cert => cert.id === certificateId);
+  if (certificateIndex === -1) {
+    throw new Error('Certificate not found');
+  }
+  
+  const updatedCertificate = { ...mockCertificates[certificateIndex], ...updates };
+  mockCertificates[certificateIndex] = updatedCertificate;
+  
+  return updatedCertificate;
+};
+
+export const deleteCertificate = async (certificateId: string): Promise<void> => {
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  const certificateIndex = mockCertificates.findIndex(cert => cert.id === certificateId);
+  if (certificateIndex === -1) {
+    throw new Error('Certificate not found');
+  }
+  
+  mockCertificates.splice(certificateIndex, 1);
 };
 
 export const getCertificates = async (learnerId: string): Promise<Certificate[]> => {
@@ -120,6 +200,21 @@ export const searchLearners = async (query: string): Promise<User[]> => {
     (user.name.toLowerCase().includes(query.toLowerCase()) || 
      user.email.toLowerCase().includes(query.toLowerCase()))
   );
+};
+
+// Helper function to get expiry status
+export const getExpiryStatus = (certificate: Certificate) => {
+  if (!certificate.expiryDate) return null;
+  
+  const daysUntilExpiry = getDaysUntilExpiry(certificate.expiryDate);
+  
+  if (daysUntilExpiry < 0) {
+    return { status: 'expired', daysUntilExpiry: Math.abs(daysUntilExpiry) };
+  } else if (daysUntilExpiry <= 30) {
+    return { status: 'expiring', daysUntilExpiry };
+  }
+  
+  return { status: 'valid', daysUntilExpiry };
 };
 
 // Verification Engine Simulation

@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Upload, Link, Loader2 } from 'lucide-react';
 import { uploadCertificate } from '../services/mockApi';
 import { Certificate } from '../types';
+import { useLanguage } from '../contexts/LanguageContext';
 import { toast } from 'sonner@2.0.3';
 
 interface UploadCertificateProps {
@@ -19,12 +20,14 @@ export const UploadCertificate: React.FC<UploadCertificateProps> = ({
   learnerId, 
   onUploadComplete 
 }) => {
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     issuer: '',
     dateIssued: '',
+    expiryDate: '',
     nsqfLevel: '',
     file: null as File | null,
     linkUrl: '',
@@ -32,7 +35,7 @@ export const UploadCertificate: React.FC<UploadCertificateProps> = ({
 
   const handleSubmit = async (uploadType: 'file' | 'link') => {
     if (!formData.title || !formData.issuer || !formData.dateIssued || !formData.nsqfLevel) {
-      toast.error('Please fill in all required fields');
+      toast.error(t('message.fillAllFields'));
       return;
     }
 
@@ -69,13 +72,14 @@ export const UploadCertificate: React.FC<UploadCertificateProps> = ({
         title: '',
         issuer: '',
         dateIssued: '',
+        expiryDate: '',
         nsqfLevel: '',
         file: null,
         linkUrl: '',
       });
-      toast.success('Certificate uploaded and verification started!');
+      toast.success(t('message.certificateUploaded'));
     } catch (error) {
-      toast.error('Failed to upload certificate');
+      toast.error(t('common.error'));
     } finally {
       setIsUploading(false);
     }
@@ -86,43 +90,42 @@ export const UploadCertificate: React.FC<UploadCertificateProps> = ({
       <DialogTrigger asChild>
         <Button className="flex items-center gap-2">
           <Upload className="w-4 h-4" />
-          Upload Certificate
+          {t('certificates.uploadCertificate')}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Upload New Certificate</DialogTitle>
+          <DialogTitle>{t('certificates.uploadCertificate')}</DialogTitle>
           <DialogDescription>
-            Add your certificate by uploading a file or providing a verification link. 
-            Our AI system will automatically verify and score your credentials.
+            Add your certificate by uploading a file or providing a verification link. Our AI system will automatically verify and score your credentials.
           </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="title">Certificate Title *</Label>
+              <Label htmlFor="title">{t('certificates.title')} *</Label>
               <Input
                 id="title"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder="e.g., Full Stack Development"
+                placeholder={t('form.enterTitle')}
               />
             </div>
             <div>
-              <Label htmlFor="issuer">Issuer *</Label>
+              <Label htmlFor="issuer">{t('certificates.issuer')} *</Label>
               <Input
                 id="issuer"
                 value={formData.issuer}
                 onChange={(e) => setFormData({ ...formData, issuer: e.target.value })}
-                placeholder="e.g., TechEd Institute"
+                placeholder={t('form.enterIssuer')}
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="dateIssued">Date Issued *</Label>
+              <Label htmlFor="dateIssued">{t('certificates.dateIssued')} *</Label>
               <Input
                 id="dateIssued"
                 type="date"
@@ -131,15 +134,27 @@ export const UploadCertificate: React.FC<UploadCertificateProps> = ({
               />
             </div>
             <div>
-              <Label htmlFor="nsqfLevel">NSQF Level *</Label>
+              <Label htmlFor="expiryDate">{t('certificates.expiryDate')}</Label>
+              <Input
+                id="expiryDate"
+                type="date"
+                value={formData.expiryDate}
+                onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <Label htmlFor="nsqfLevel">{t('certificates.nsqfLevel')} *</Label>
               <Select value={formData.nsqfLevel} onValueChange={(value) => setFormData({ ...formData, nsqfLevel: value })}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select level" />
+                  <SelectValue placeholder={t('form.selectLevel')} />
                 </SelectTrigger>
                 <SelectContent>
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((level) => (
                     <SelectItem key={level} value={level.toString()}>
-                      Level {level}
+                      {t('filter.level')} {level}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -149,7 +164,7 @@ export const UploadCertificate: React.FC<UploadCertificateProps> = ({
 
           <Tabs defaultValue="file" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="file">Upload File</TabsTrigger>
+              <TabsTrigger value="file">{t('form.upload')} File</TabsTrigger>
               <TabsTrigger value="link">Add Link</TabsTrigger>
             </TabsList>
             
@@ -171,12 +186,12 @@ export const UploadCertificate: React.FC<UploadCertificateProps> = ({
                 {isUploading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Uploading & Verifying...
+                    {t('common.loading')}
                   </>
                 ) : (
                   <>
                     <Upload className="w-4 h-4 mr-2" />
-                    Upload File
+                    {t('form.upload')} File
                   </>
                 )}
               </Button>
@@ -189,7 +204,7 @@ export const UploadCertificate: React.FC<UploadCertificateProps> = ({
                   id="linkUrl"
                   value={formData.linkUrl}
                   onChange={(e) => setFormData({ ...formData, linkUrl: e.target.value })}
-                  placeholder="https://coursera.org/verify/cert123"
+                  placeholder={t('form.enterUrl')}
                 />
               </div>
               <Button 
@@ -200,7 +215,7 @@ export const UploadCertificate: React.FC<UploadCertificateProps> = ({
                 {isUploading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Adding & Verifying...
+                    {t('common.loading')}
                   </>
                 ) : (
                   <>
